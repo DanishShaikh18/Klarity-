@@ -1,18 +1,40 @@
 import fitz
 
-data = fitz.open(r'data/5thPractical.pdf')
+data = fitz.open(r'data/sample_two_column.pdf')
 
 print("Total Pages ", data.page_count)
 
-for i , page in enumerate(data):
-    image_list = page.get_images(full=True)
-    print(f"Page {i+1} has {len(image_list)} images")
+# pages = data[0]
 
-    for img_index , img in enumerate(image_list):
-        xref = img[0]
-        base_image = data.extract_image(xref)
-        image_bytes = base_image["image"]
-        image_ext = base_image["ext"]
+# blocks = pages.get_text("blocks")
 
-        with open(f"image {i+1}_{img_index+1}.{image_ext}", "wb") as img_file:
-            img_file.write(image_bytes)
+# blocks.sort(key=lambda b: (b[1], b[0]))
+
+# for b in blocks:
+#     print(b[4])
+
+# text = ""
+# for page in data:
+#     text += page.get_text()
+# print(text)
+
+for page_num , page in enumerate(data):
+    blocks = page.get_text("blocks")
+
+    page_width = page.rect.width
+    midpoint = page_width / 2
+
+    left_col = [ b for b in blocks if b[0] < midpoint]
+    right_col = [ b for b in blocks if b[0] >= midpoint]
+
+    print(f"--- Page {page_num + 1} ---")
+
+    print("Left Column:")
+    for b in sorted(left_col, key=lambda x: x[1]):  # top-to-bottom order
+        print(b[4].strip())
+    
+    print("\nRight Column:")
+    for b in sorted(right_col, key=lambda x: x[1]):  # top-to-bottom order
+        print(b[4].strip())
+
+
