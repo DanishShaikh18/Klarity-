@@ -1,6 +1,6 @@
 import fitz
 
-data = fitz.open(r'data/sample_two_column.pdf')
+data = fitz.open(r'data/Software Unit 1.pdf')
 
 print("Total Pages ", data.page_count)
 
@@ -38,4 +38,3 @@ for page_num , page in enumerate(data):
         print(b[4].strip())
 
 
-#uhfkbvkahalfhufqwoifyqofqfffhifhvj vffduofdhfod
