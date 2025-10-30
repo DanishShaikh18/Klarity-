@@ -47,6 +47,6 @@ print("Total Pages ", data.page_count)
 #             for row in table:
 #                 print(row)
 
-# tables = camelot.read_pdf(r'data/Software Unit 1.pdf', flavor='stream' )
-# for table in tables:
-#     print(table.df)
+tables = camelot.read_pdf(r'data/Software Unit 1.pdf', flavor='stream' )
+for table in tables:
+    print(table.df)
