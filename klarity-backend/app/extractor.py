@@ -71,34 +71,51 @@ print("Total Pages ", data.page_count)
 #         print(row)
         
 
-def extract_text_from_images(pdf_path):
-    doc = fitz.open(pdf_path)
-    ocr_texts = []
+# def extract_text_from_images(pdf_path):
+#     doc = fitz.open(pdf_path)
+#     ocr_texts = []
 
-    for page_num, page in enumerate(doc, start=1):
-        images = page.get_images(full=True)
+#     for page_num, page in enumerate(doc, start=1):
+#         images = page.get_images(full=True)
 
-        for i , img in enumerate(images):
-            xref = img[0]
-            base_image = doc.extract_image(xref)
-            image_bytes = base_image['image']
+#         for i , img in enumerate(images):
+#             xref = img[0]
+#             base_image = doc.extract_image(xref)
+#             image_bytes = base_image['image']
 
-            #Open image with Pillow
-            image = Image.open(io.BytesIO(image_bytes))
+#             #Open image with Pillow
+#             image = Image.open(io.BytesIO(image_bytes))
 
-            #Run OCR
-            text = pytesseract.image_to_string(image, config='--psm 6')
-            clean_text = text.strip()
+#             #Run OCR
+#             text = pytesseract.image_to_string(image, config='--psm 6')
+#             clean_text = text.strip()
 
-            if clean_text:
-                ocr_texts.append({
-                    'page':page_num,
-                    'image_index': i + 1,
-                    'text': clean_text
-                })
-    return ocr_texts
+#             if clean_text:
+#                 ocr_texts.append({
+#                     'page':page_num,
+#                     'image_index': i + 1,
+#                     'text': clean_text
+#                 })
+#     return ocr_texts
 
-ocr_results = extract_text_from_images(r'data/Chatgpt_PDF.pdf')
-for result in ocr_results:
-    print(f"--- OCR Text from Image {result['image_index']} on Page {result['page']} ---")
-    print(result['text'])
+# ocr_results = extract_text_from_images(r'data/Chatgpt_PDF.pdf')
+# for result in ocr_results:
+#     print(f"--- OCR Text from Image {result['image_index']} on Page {result['page']} ---")
+#     print(result['text'])
+
+# def extract_from_image(path):
+#     import google.generativeai as genai
+#     genai.configure(api_key="AIzaSyDGLo8r6NuHPkGFxpYHX56aGw6VKlD1ZnM")
+
+#     img = Image.open(path)
+
+#     model = genai.GenerativeModel("gemini-1.5-flash")
+#     response = model.generate_content([
+#         img,
+#         "Extract all text from this image."
+#     ])
+
+#     return response.text
+
+# result = extract_from_image(r'data/image.png')
+# print(result)
