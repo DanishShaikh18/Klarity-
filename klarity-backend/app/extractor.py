@@ -47,6 +47,33 @@ print("Total Pages ", data.page_count)
 #             for row in table:
 #                 print(row)
 
-tables = camelot.read_pdf(r'data/Software Unit 1.pdf', flavor='stream' )
-for table in tables:
-    print(table.df)
+# tables = camelot.read_pdf(r'data/Software Unit 1.pdf', flavor='stream' )
+# for table in tables:
+#     print(table.df)
+
+def extract_only_tables(pdf_path):
+    tables_data = []
+
+    with pdfplumber.open(pdf_path) as pdf:
+        for page_num, page in enumerate(pdf.pages,start=1):
+            tables = page.extract_tables()
+
+            for table in tables:
+                #Filter must have atleast two rows and two columns 
+                if len(table) >= 2 and any(len(row) > 1 for row in table):
+                    #Optional: ignore table-like text with single long lines
+                    avg_cols = sum(len(row) for row in table) / len(table)
+                    if avg_cols > 1.5:
+                        tables_data.append({
+                            'page': page_num,
+                            'table': table
+                        })
+    return tables_data
+
+tables = extract_only_tables(r'data/Software Unit 1.pdf')
+for t in tables:
+    print(f"--- Table on Page {t['page']} ---")
+    for row in t['table']:
+        print(row)
+        
+            
