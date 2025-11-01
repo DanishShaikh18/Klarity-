@@ -119,3 +119,14 @@ print("Total Pages ", data.page_count)
 
 # result = extract_from_image(r'data/image.png')
 # print(result)
+
+
+
+def extract_text_easyocr(image_path):
+    import easyocr
+
+    reader = easyocr.Reader(['en'])
+    result = reader.readtext(image_path,detail=0)
+    return '\n'.join(result)
+text = extract_text_easyocr(r'data/image.png')
+print(text)
