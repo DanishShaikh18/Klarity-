@@ -154,4 +154,44 @@ import os
 # pdf_text = extract_text_from_scanned_pdf_easyocr("data/Chatgpt_PDF.pdf")
 # print(pdf_text[:1000])
 
+from docx import Document
+from pptx import Presentation
+
+# 📘 Extract text from Word (.docx)
+def extract_text_from_word(docx_path):
+    doc = Document(docx_path)
+    text = []
+    for para in doc.paragraphs:
+        if para.text.strip():
+            text.append(para.text.strip())
+    for table in doc.tables:
+        for row in table.rows:
+            row_data = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+            if row_data:
+                text.append(" | ".join(row_data))
+    return "\n".join(text)
+
+# 📊 Extract text from PowerPoint (.pptx)
+def extract_text_from_ppt(pptx_path):
+    prs = Presentation(pptx_path)
+    text = []
+    for slide_num, slide in enumerate(prs.slides, start=1):
+        text.append(f"\n--- Slide {slide_num} ---")
+        for shape in slide.shapes:
+            if hasattr(shape, "text") and shape.text.strip():
+                text.append(shape.text.strip())
+        if slide.has_notes_slide:
+            notes = slide.notes_slide.notes_text_frame.text.strip()
+            if notes:
+                text.append(f"Notes: {notes}")
+    return "\n".join(text)
+
+
+# 🧪 Example usage
+if __name__ == "__main__":
+    # word_text = extract_text_from_word("data/sample.docx")
+    ppt_text = extract_text_from_ppt("data/Team_Bharati[1].pptx")
+    
+    # print("\n\nWord Output:\n", word_text[:500])
+    print("\n\nPPT Output:\n", ppt_text[:500])
 
