@@ -5,9 +5,9 @@ from PIL import Image
 import io
 import pytesseract
 
-data = fitz.open(r'data/Software Unit 1.pdf')
+# data = fitz.open(r'data/Software Unit 1.pdf')
 
-print("Total Pages ", data.page_count)
+# print("Total Pages ", data.page_count)
 
 # pages = data[0]
 
@@ -122,11 +122,36 @@ print("Total Pages ", data.page_count)
 
 
 
-def extract_text_easyocr(image_path):
-    import easyocr
+# def extract_text_easyocr(image_path):
+#     import easyocr
 
-    reader = easyocr.Reader(['en'])
-    result = reader.readtext(image_path,detail=0)
-    return '\n'.join(result)
-text = extract_text_easyocr(r'data/image.png')
-print(text)
+#     reader = easyocr.Reader(['en'])
+#     result = reader.readtext(image_path,detail=0)
+#     return '\n'.join(result)
+# text = extract_text_easyocr(r'data/image.png')
+# print(text)
+
+from pdf2image import convert_from_path
+import easyocr
+import os
+
+# def extract_text_from_scanned_pdf_easyocr(pdf_path, output_folder="temp_images"):
+#     os.makedirs(output_folder, exist_ok=True)
+#     pages = convert_from_path(pdf_path)
+#     reader = easyocr.Reader(['en'])
+#     full_text = []
+
+#     for i, page in enumerate(pages):
+#         image_path = f"{output_folder}/page_{i+1}.png"
+#         page.save(image_path, 'PNG')
+#         text = reader.readtext(image_path, detail=0)
+#         full_text.append("\n".join(text))
+#         print(f"✅ Processed page {i+1}/{len(pages)}")
+
+#     return "\n\n".join(full_text)
+
+# # Example usage
+# pdf_text = extract_text_from_scanned_pdf_easyocr("data/Chatgpt_PDF.pdf")
+# print(pdf_text[:1000])
+
+
