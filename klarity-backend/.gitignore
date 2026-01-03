@@ -1,0 +1,14 @@
+klarity-backend\.env
+.env
+
+klarity-backend/__pycache__/
+__pycache__/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Backend env
+klarity-backend/venv/
+
