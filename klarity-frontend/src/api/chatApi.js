@@ -152,3 +152,19 @@ export async function deleteChat(chatId) {
 
   return data;
 }
+
+
+/**
+ * POST /chats/{chat_id}/summary
+ * Returns: { chat_id, summary }
+ */
+export function generateChatSummary(chatId) {
+  if (!chatId) {
+    return Promise.reject(
+      new Error("generateChatSummary: chatId required")
+    );
+  }
+
+  // No body needed
+  return postJson(`/chats/${chatId}/summary`, {});
+}

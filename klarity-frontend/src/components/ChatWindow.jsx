@@ -4,11 +4,13 @@ import {
   askInChat,
   uploadToChat,
   getChatDocuments,
+  generateChatSummary,
 } from "../api/chatApi";
 
 import ChatBox from "./ChatBox";
 import ChatInput from "./ChatInput";
 import FileUploader from "./FileUploader";
+import ChatSummaryPanel from "./ChatSummaryPanel";
 
 export default function ChatWindow({ chatId, onFirstMessage }) {
   const [messages, setMessages] = useState([]);
@@ -16,6 +18,16 @@ export default function ChatWindow({ chatId, onFirstMessage }) {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [asking, setAsking] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  /* ===== SUMMARY STATE ===== */
+  const [showSummary, setShowSummary] = useState(false);
+  const [summarizing, setSummarizing] = useState(false);
+
+  // summaryCache = { chatId: summaryText }
+  const [summaryCache, setSummaryCache] = useState({});
+
+  // summaryMeta = { chatId: messageCountWhenSummarized }
+  const [summaryMeta, setSummaryMeta] = useState({});
 
   useEffect(() => {
     if (!chatId) {
@@ -46,30 +58,25 @@ export default function ChatWindow({ chatId, onFirstMessage }) {
       activeChatId = await onFirstMessage(question);
     }
 
-    // 1️⃣ Show user message immediately
-    setMessages(prev => [
+    // Invalidate summary for this chat (chat changed)
+    setSummaryMeta(prev => ({
       ...prev,
-      { role: "user", content: question },
-    ]);
+      [activeChatId]: null,
+    }));
 
-    // 2️⃣ Show assistant placeholder
+    // Show user message immediately
+    setMessages(prev => [...prev, { role: "user", content: question }]);
+
     const tempId = Date.now();
-    setMessages(prev => [
-      ...prev,
-      { id: tempId, role: "assistant", content: "" },
-    ]);
+    setMessages(prev => [...prev, { id: tempId, role: "assistant", content: "" }]);
 
     setAsking(true);
 
-    // 3️⃣ Fetch answer
     const resp = await askInChat(activeChatId, question);
 
-    // 4️⃣ Replace placeholder with real answer
     setMessages(prev =>
       prev.map(m =>
-        m.id === tempId
-          ? { ...m, content: resp.answer }
-          : m
+        m.id === tempId ? { ...m, content: resp.answer } : m
       )
     );
 
@@ -87,7 +94,6 @@ export default function ChatWindow({ chatId, onFirstMessage }) {
 
     const resp = await uploadToChat(activeChatId, file);
 
-    // Show file strip immediately after upload
     setFiles(prev => [
       ...prev,
       { id: resp.doc_db_id, name: resp.file },
@@ -96,10 +102,46 @@ export default function ChatWindow({ chatId, onFirstMessage }) {
     setUploading(false);
   };
 
+  /* ================= SUMMARIZE ================= */
+  const handleSummarize = async (force = false) => {
+    if (!chatId) return;
+
+    setShowSummary(true);
+
+    const currentMsgCount = messages.length;
+    const cached = summaryCache[chatId];
+    const lastCount = summaryMeta[chatId];
+
+    // Use cache if chat unchanged and not forced
+    if (!force && cached && lastCount === currentMsgCount) {
+      return;
+    }
+
+    setSummarizing(true);
+
+    try {
+      const res = await generateChatSummary(chatId);
+
+      setSummaryCache(prev => ({
+        ...prev,
+        [chatId]: res.summary,
+      }));
+
+      setSummaryMeta(prev => ({
+        ...prev,
+        [chatId]: currentMsgCount,
+      }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSummarizing(false);
+    }
+  };
+
   const showWelcome = messages.length === 0 && files.length === 0;
 
   return (
-    <div className=" flex flex-col h-full bg-bg text-textPrimary md:ml-7">
+    <div className="flex flex-col h-full bg-bg text-textPrimary md:ml-7">
       {/* ===== FILE STRIP ===== */}
       {(files.length > 0 || uploading) && (
         <div className="px-6 py-2 flex items-center gap-2 overflow-x-auto border-b border-white/5">
@@ -120,6 +162,22 @@ export default function ChatWindow({ chatId, onFirstMessage }) {
           )}
 
           <div className="flex-1" />
+
+          {/* ===== SUMMARIZE BUTTON ===== */}
+          <button
+            onClick={() => handleSummarize(false)}
+            disabled={!chatId || summarizing}
+            className="
+              px-3 py-1.5 rounded-full
+              text-sm font-medium
+              bg-white/10 hover:bg-white/20
+              disabled:opacity-40
+              transition
+            "
+          >
+            {summarizing ? "Summarizing…" : "Summarize"}
+          </button>
+
           <FileUploader small onUpload={handleUpload} />
         </div>
       )}
@@ -136,16 +194,22 @@ export default function ChatWindow({ chatId, onFirstMessage }) {
       )}
 
       {/* ===== CHAT ===== */}
-      <ChatBox
-        messages={messages}
-        loading={loadingMessages || asking}
-      />
+      <ChatBox messages={messages} loading={loadingMessages || asking} />
 
       {/* ===== INPUT ===== */}
       <ChatInput
         onSend={handleSend}
         disabled={asking || uploading}
         onUpload={handleUpload}
+      />
+
+      {/* ===== SUMMARY PANEL ===== */}
+      <ChatSummaryPanel
+        open={showSummary}
+        loading={summarizing}
+        summary={summaryCache[chatId]}
+        onClose={() => setShowSummary(false)}
+        onRegenerate={() => handleSummarize(true)}
       />
     </div>
   );

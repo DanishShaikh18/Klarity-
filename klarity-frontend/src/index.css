@@ -87,3 +87,16 @@ body,
   top: 0.1em;
   color: rgba(255,255,255,0.6);
 }
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.25s ease-out forwards;
+}

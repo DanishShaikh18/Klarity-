@@ -332,3 +332,48 @@ def delete_chat(
 
     return {"status": "ok", "deleted_chat_id": chat_id}
 
+
+# ================================
+# 6️⃣ Generate Chat Summary
+# ================================
+
+from app.services.chat_summary import generate_chat_summary
+
+@router.post("/chats/{chat_id}/summary")
+def summarize_chat(
+    chat_id: int,
+    db: Session = Depends(get_db),
+):
+    # 1) Ensure chat exists
+    chat = db.query(Chat).filter(Chat.id == chat_id).first()
+    if chat is None:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+
+    # 2) Fetch all messages (oldest → newest)
+    messages = (
+        db.query(Message)
+        .filter(Message.chat_id == chat_id)
+        .order_by(Message.timestamp.asc())
+        .all()
+    )
+
+    if not messages:
+        raise HTTPException(
+            status_code=400,
+            detail="Chat has no messages to summarize."
+        )
+
+    # 3) Generate summary
+    try:
+        summary = generate_chat_summary(messages)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Summary generation failed: {e}"
+        )
+
+    # 4) Return summary (NOT stored)
+    return {
+        "chat_id": chat_id,
+        "summary": summary,
+    }
