@@ -1,200 +1,169 @@
-🧠 Klarity — AI Knowledge Assistant
+# Klarity – AI Powered Document Intelligence System
 
-“An intelligent assistant that understands your study material — upload PDFs, Docs, Images, or YouTube links and ask anything!”
+Klarity is an AI-powered document interaction system that allows users to upload PDF documents and ask questions in natural language.  
+The system retrieves relevant information from the uploaded documents and generates accurate answers using a Retrieval-Augmented Generation (RAG) pipeline.
 
-🎯 Project Overview
+The goal of Klarity is to simplify document understanding by enabling conversational interaction with large study materials, technical documents, and notes.
 
-Klarity is an AI-powered study assistant that helps students and learners interact with their study material using Retrieval-Augmented Generation (RAG).
-It can analyze PDFs, images, and YouTube videos to answer questions, summarize notes, and extract key insights — all in one place.
+---
 
-🌟 Purpose
+# Problem Statement
 
-To build a multi-modal AI assistant that can:
+Large documents such as textbooks, lecture notes, and technical manuals are difficult to navigate manually.
 
-Extract, understand, and summarize educational content.
+Traditional document readers only support keyword search, which:
+- does not understand context
+- cannot summarize information
+- requires manual scanning of multiple pages
 
-Allow users to query any material (PDFs, Images, YouTube videos).
+General AI chatbots also struggle because they:
+- rely on pretrained knowledge
+- do not understand user-specific documents
+- may produce hallucinated responses
 
-Deliver contextually accurate and concise answers.
+Klarity solves this problem by grounding AI responses directly in uploaded documents.
 
-🚀 Core Features
-Feature	Description
-📄 PDF & Docs Q&A	Upload study notes or research papers and ask contextual questions.
-🧠 Summarization	Generate concise summaries, outlines, or key points.
-🖼️ OCR Extraction	Extract and understand handwritten or printed notes from images.
-🎥 YouTube Q&A	Extract video transcripts, translate (Hindi/English), summarize, and query.
-💾 Persistent Memory	Save embeddings and chat history for continuous context.
-💬 Interactive Chat UI	ChatGPT-like interface for document interaction.
-🔍 RAG Pipeline	Ensures context-aware answers through document retrieval.
-📚 Multi-document Support	Query across multiple PDFs or video sources.
-🧱 Development Model
+---
 
-Iterative Incremental Model — The system is developed in working phases, where each increment adds a usable feature, and each iteration improves existing components.
+# Solution
 
-Phase	Feature	Description
-1️⃣	PDF Upload + Q&A	Upload → Extract → Embed → Query
-2️⃣	Persistent Memory	Store embeddings + chat history
-3️⃣	OCR Integration	Handle images with Tesseract
-4️⃣	YouTube Summarizer	Transcript extraction + translation
-5️⃣	Summarization & Notes	Auto-generate notes/key points
-6️⃣	Chat UI Integration	Full React chat interface
-🧰 Tech Stack
-🧠 AI / NLP
+Klarity uses **Retrieval-Augmented Generation (RAG)** to combine semantic document search with a large language model.
 
-LLMs: GPT-4o-mini / Ollama (Llama 3.1 / Mistral)
+Instead of letting the AI guess answers, Klarity:
 
-Framework: LangChain
+1. Extracts text from uploaded documents  
+2. Splits the content into smaller semantic chunks  
+3. Converts chunks into vector embeddings  
+4. Stores embeddings in a vector database  
+5. Retrieves the most relevant chunks for each query  
+6. Sends the retrieved context to the LLM to generate an answer
 
-Embeddings: text-embedding-3-small / Ollama Embeddings
+This ensures answers are **document-grounded, relevant, and reliable**.
 
-💾 Database / Memory
+---
 
-Vector DB: Qdrant (Free Cloud Tier)
+# Key Features
 
-Chat Memory: SQLite
+- Upload and analyze PDF documents
+- Natural language question answering
+- Document-grounded responses
+- Multi-chat session support
+- Persistent chat history
+- Document summary generation
+- Semantic document search
+- Chat-level document isolation
+- Smart Summary Creation
+---
 
-📄 Data Extraction
+# System Architecture
 
-PDFs: PyMuPDF / pdfplumber
+The system follows a **client-server architecture** with a modular backend.
 
-Images: pytesseract + PIL (OCR)
+Frontend  
+→ sends user queries and document uploads  
 
-YouTube: youtube-transcript-api
+Backend (FastAPI)  
+→ handles document processing and query logic  
 
-Translation: googletrans
+Vector Database (Qdrant)  
+→ stores document embeddings  
 
-⚙️ Backend
+LLM (Gemini)  
+→ generates answers using retrieved context
 
-Framework: FastAPI (Python)
+Pipeline:
 
-RAG Framework: LangChain + Qdrant
+User Query  
+→ Query Embedding  
+→ Vector Search  
+→ Context Retrieval  
+→ LLM Response Generation
 
-Embeddings & LLM: OpenAI / Ollama API
+---
 
-💻 Frontend
+# Technology Stack
 
-Stack: React (Vite) + Tailwind CSS
+## Backend
+- Python
+- FastAPI
 
-Communication: Axios
+## Frontend
+- React
+- Tailwind CSS
 
-☁️ Deployment
+## AI & NLP
+- Retrieval-Augmented Generation (RAG)
+- Gemini LLM
+- Nomic Embedding Model
 
-Backend: Render / Railway (FastAPI)
+## Databases
+- SQLite (chat metadata)
+- Qdrant (vector embeddings)
 
-Frontend: Vercel
+## Document Processing
+- LangChain text splitting
+- Custom chunking pipeline
 
-Vector DB: Qdrant Cloud
+---
 
-🏗️ System Architecture
-React Frontend (Chat UI)
-    │
-    ▼
-FastAPI Backend
- ├── Upload Handlers (PDF / Image / YouTube)
- ├── Extractors + Translators
- ├── Embedding Generator (OpenAI / Ollama)
- ├── Vector Store (Qdrant)
- ├── Retrieval + LLM (LangChain)
- ├── Memory (SQLite)
- └── REST APIs (Ask / Process)
+# Implementation Highlights
 
-📂 Folder Structure
-klarity/
-│
-├── klarity-backend/
-│   ├── app/
-│   │   ├── main.py              # FastAPI entrypoint
-│   │   ├── extractor.py         # Extract PDF/Image/YouTube text
-│   │   ├── rag_pipeline.py      # LangChain RAG logic
-│   │   ├── db.py                # Qdrant setup
-│   │   ├── models.py            # Pydantic models for API
-│   │   ├── utils.py             # Cleaning & preprocessing
-│   │   └── routes/
-│   │       ├── doc.py           # /process route
-│   │       └── qa.py            # /ask route
-│   ├── data/
-│   │   ├── uploads/
-│   │   ├── processed/
-│   │   └── qdrant/
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── README.md
-│
-└── klarity-frontend/
-    ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── services/
-    │   │   └── api.js
-    │   └── App.jsx
-    ├── package.json
-    └── tailwind.config.js
+### Document Processing Pipeline
+The system extracts document text and processes it through multiple stages:
 
-🧠 RAG Pipeline (Core Logic)
-Step	Description	Tool
-1️⃣ Extraction	Extract text from PDFs, images, or YouTube	PyMuPDF, pytesseract, youtube-transcript-api
-2️⃣ Cleaning	Clean, normalize, and structure extracted text	Regex, spaCy
-3️⃣ Chunking	Split text into overlapping chunks	LangChain TextSplitter
-4️⃣ Embedding	Convert chunks into vectors	OpenAI / Ollama Embeddings
-5️⃣ Storage	Store embeddings for retrieval	Qdrant Vector DB
-6️⃣ Retrieval	Fetch top-k relevant chunks per query	LangChain Retriever
-7️⃣ Generation	Combine context + query → generate answer	LangChain RetrievalQA
-8️⃣ Frontend Chat	Interactive chat experience	React + Tailwind
-🎓 Learning Outcomes
+Extraction  
+→ Cleaning  
+→ Chunking  
+→ Embedding  
+→ Vector Storage
 
-Understanding RAG architecture and its real-world application.
+This ensures efficient semantic retrieval.
 
-Building a FastAPI-based GenAI backend integrated with LLMs.
+### Semantic Search
+Instead of keyword matching, Klarity uses vector embeddings to identify semantically relevant document chunks.
 
-Implementing vector databases (Qdrant) for knowledge retrieval.
+### Chat-Based Interaction
+Users interact with documents through a conversational interface, making document exploration intuitive.
 
-Creating a multi-modal AI system (PDF, OCR, YouTube).
+### Context-Aware Responses
+Only retrieved document chunks are passed to the LLM, reducing hallucination and improving answer reliability.
 
-Deploying an end-to-end AI app with free-tier infrastructure.
+---
 
-🧩 Future Enhancements
-Feature	Description
-🧑‍💼 User Accounts	Login system with personalized memory
-🧾 Export Summaries	Export notes or Q&A as PDFs
-🌐 Multi-source Context	Combine answers across PDFs, images, and videos
-🤖 AI Workflow	Integrate n8n / LangGraph for automation
-☁️ Cloud Sync	Persistent embeddings and history per user
-⚙️ Software Requirements
-Category	Requirements
-Backend	Python 3.10+, FastAPI, LangChain, Qdrant-client
-Frontend	Node.js 18+, React + Vite, Tailwind CSS
-Database	Qdrant (Cloud or Local), SQLite
-AI APIs	OpenAI / Ollama
-Environment	VS Code, Docker (optional), Git
-💻 Hardware Requirements
-Component	Minimum	Recommended
-CPU	Dual-core	Quad-core i5+
-RAM	8 GB	16 GB
-Storage	5 GB	10+ GB
-GPU (Optional)	For Ollama / Local LLMs	NVIDIA CUDA-enabled
-🧭 Example Flow
+# Challenges and Engineering Decisions
 
-User: “What is the KDD process?”
-System Flow:
+### Chunking Strategy
+Proper chunking was required to ensure that definitions and context remained together during retrieval.
 
-Extract text from uploaded PDF.
+### Prompt Engineering
+The system uses structured prompts to ensure answers are grounded in document context and formatted clearly.
 
-Clean & split text into chunks.
+### Retrieval Optimization
+Top-k vector search is used to retrieve the most relevant document segments for each query.
 
-Generate embeddings and store in Qdrant.
+---
 
-Retrieve relevant chunks for the query.
+# Use Cases
 
-Send to LLM with context.
+- Study material exploration
+- Technical documentation search
+- Research paper analysis
+- Educational learning assistant
+- Knowledge base interaction
 
-Return a clear, context-rich answer.
+---
 
-🧱 Deployment Plan
-Component	Platform
-Backend	Render / Railway
-Frontend	Vercel
-Vector DB	Qdrant Cloud
-Auth (Future)	Supabase / Firebase
-🧩 License
+# Future Improvements
 
-This project is open source under the MIT License.
+- Support for additional file formats (DOCX, images)
+- OCR for scanned documents
+- User authentication
+- Cloud deployment
+- Flashcards and quiz generation
+- Voice-based interaction
+
+---
+
+# Project Status
+
+Academic project completed as part of a final year software engineering project.

@@ -178,15 +178,15 @@ def call_gemini_rag(question: str, context: str) -> str:
         🧠 RULES:
 
         1) Use the document context as the PRIMARY source of information.
-        2) Do NOT contradict the document.
-        3) You MAY rephrase, explain, reorganize, and clarify the information.
-        4) You MAY use general knowledge ONLY to improve clarity and readability,
-        but NOT to introduce new facts.
-        5) Prioritize the User Question in your answer.
-        5) If the document does not contain enough information,
-        clearly say so and answer partially if possible.
-        6) If nothing relevant exists in the document, say:
-        "Not found in the uploaded documents."
+        2) You MAY rephrase, explain, reorganize, and clarify the information.
+        3) You MAY use general knowledge ONLY to improve clarity and readability and there is any little relevenave take that too
+        4) Prioritize the User Question in your answer.
+        5) If the document contains partial, implied, or definition-style information
+        (for example a heading followed by an explanation),
+        you MUST combine and answer it.
+        6) ONLY say "Not found in the uploaded documents."
+        if the topic is completely absent from all context.
+
 
         --------------------------------
         FORMAT RULES (VERY IMPORTANT):

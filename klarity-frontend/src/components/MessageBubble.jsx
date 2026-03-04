@@ -27,7 +27,7 @@ export default function MessageBubble({
 
     setDisplayed("");
     let i = 0;
-    const speed = 8;
+    const speed = 4;
 
     const interval = setInterval(() => {
       i++;

@@ -14,8 +14,8 @@ class Chunker:
             length_function=len,
             separators=[
                 "\n\n",   # paragraph level
-                "\n",     # line level
                 ". ",     # sentence level
+                "\n",     # line level
                 " ",      # word level
                 ""        # fallback char level
             ]
